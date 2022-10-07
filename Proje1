@@ -1,0 +1,34 @@
+from google.colab import drive
+drive.mount("/content/drive")
+import cv2
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+import os
+from PIL import Image
+gorseller=[]
+def proje1(x):
+  folder=f"/content/drive/MyDrive/Proje/spectrograms/{x}"
+  for filename in os.listdir(folder):
+        img = Image.open(os.path.join(folder,filename)).convert("L") 
+        img.thumbnail((32,32)) 
+        img.save("resized_"+filename, optimize=True, quality=20)
+  images = [file for file in os.listdir() if file.endswith(('jpeg', 'png', 'jpg'))]
+  for image in images :
+    img = cv2.imread(image)
+    final_img = cv2.normalize(img,  None, 0, 1, cv2.NORM_MINMAX) 
+    gorseller.append([final_img, x])
+    for i in range(0,10):
+  proje1(i)
+  x = [i[0] for i in gorseller]
+y = [i[1] for i in gorseller]
+from sklearn.preprocessing import LabelEncoder, minmax_scale
+from sklearn.model_selection import train_test_split
+x_train, x_temporary, y_train, y_temporary = train_test_split(x, y, train_size= 0.8)
+x_val, x_test, y_val, y_test=train_test_split(x_temporary, y_temporary, train_size= 0.5)
+import numpy as np
+np.save("/content/drive/MyDrive/Proje/data.npy", x_train)
+np.save("/content/drive/MyDrive/Proje/data2.npy", y_train)
+np.save("/content/drive/MyDrive/Proje/data3.npy", x_test)
+np.save("/content/drive/MyDrive/Proje/data4.npy", y_test)
+np.save("/content/drive/MyDrive/Proje/data5.npy", x_val)
+np.save("/content/drive/MyDrive/Proje/data6.npy", y_val)
